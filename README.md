@@ -1,60 +1,207 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ⚡ EV Charging Station API
+### Laravel 11 + Sanctum · REST API · PHPUnit · Swagger/OpenAPI
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+---
 
-## About Laravel
+## 📁 Project Structure
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```
+app/
+├── Http/
+│   ├── Controllers/API/
+│   │   ├── AuthController.php           # Register, Login, Logout
+│   │   ├── ChargingStationController.php # CRUD + Geo-search
+│   │   ├── ConnectorController.php      # Connector management (admin)
+│   │   ├── ReservationController.php    # Reserve, Modify, Cancel
+│   │   ├── ChargingSessionController.php# Start, End, History
+│   │   └── StatisticsController.php     # Occupancy & energy stats
+│   └── Middleware/
+│       └── RoleMiddleware.php           # role:admin guard
+├── Models/
+│   ├── User.php
+│   ├── ChargingStation.php
+│   ├── Connector.php
+│   ├── Reservation.php
+│   └── ChargingSession.php
+database/
+├── migrations/                          # 5 migration files
+├── seeders/DatabaseSeeder.php
+└── factories/                           # All model factories
+routes/
+└── api.php                              # All API routes
+tests/Feature/                           # PHPUnit tests
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🚀 Installation
 
-## Learning Laravel
+```bash
+# 1. Clone & install dependencies
+composer install
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+# 2. Environment setup
+cp .env.example .env
+php artisan key:generate
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 3. Configure database in .env
+DB_CONNECTION=mysql
+DB_DATABASE=ev_charging
+DB_USERNAME=root
+DB_PASSWORD=
 
-## Laravel Sponsors
+# 4. Run migrations + seed
+php artisan migrate --seed
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# 5. Install Sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 
-### Premium Partners
+# 6. Start server
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 🔐 Authentication (Sanctum)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+All protected routes require:
+```
+Authorization: Bearer {token}
+```
 
-## Code of Conduct
+Get token via `POST /api/auth/login` or `POST /api/auth/register`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 📡 API Endpoints Reference
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Auth
+| Method | Endpoint            | Auth | Description           |
+|--------|---------------------|------|-----------------------|
+| POST   | /api/auth/register  | ❌   | Register new user     |
+| POST   | /api/auth/login     | ❌   | Login → get token     |
+| POST   | /api/auth/logout    | ✅   | Revoke current token  |
+| GET    | /api/auth/user      | ✅   | Get current user      |
 
-## License
+### Charging Stations
+| Method | Endpoint                      | Role  | Description                      |
+|--------|-------------------------------|-------|----------------------------------|
+| GET    | /api/stations                 | user  | List all stations                |
+| GET    | /api/stations/search          | user  | Search by lat/lng/radius         |
+| GET    | /api/stations/{id}            | user  | Station detail + availability    |
+| POST   | /api/admin/stations           | admin | Create station                   |
+| PUT    | /api/admin/stations/{id}      | admin | Update station                   |
+| DELETE | /api/admin/stations/{id}      | admin | Delete station                   |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# EVolt-API
+### Reservations
+| Method | Endpoint                          | Role | Description              |
+|--------|-----------------------------------|------|--------------------------|
+| GET    | /api/reservations                 | user | List my reservations     |
+| POST   | /api/reservations                 | user | Create reservation       |
+| GET    | /api/reservations/{id}            | user | Get reservation detail   |
+| PUT    | /api/reservations/{id}            | user | Modify time/duration     |
+| PATCH  | /api/reservations/{id}/cancel     | user | Cancel reservation       |
+
+### Charging Sessions
+| Method | Endpoint                          | Role | Description           |
+|--------|-----------------------------------|------|-----------------------|
+| GET    | /api/sessions                     | user | Active sessions       |
+| GET    | /api/sessions/history             | user | Past sessions         |
+| GET    | /api/sessions/{id}                | user | Session detail        |
+| POST   | /api/sessions/{id}/start          | user | Start session         |
+| PATCH  | /api/sessions/{id}/end            | user | End session           |
+
+### Admin Statistics
+| Method | Endpoint                               | Role  | Description            |
+|--------|----------------------------------------|-------|------------------------|
+| GET    | /api/admin/statistics                  | admin | Global stats           |
+| GET    | /api/admin/statistics/stations/{id}    | admin | Per-station stats      |
+| GET    | /api/admin/statistics/occupancy        | admin | Real-time occupancy    |
+
+---
+
+## 🔍 Search Example
+
+```http
+GET /api/stations/search?lat=48.8566&lng=2.3522&radius_km=10&connector_type=CCS&min_power_kw=50
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Paris Centre EV Hub",
+      "status": "available",
+      "distance_km": 0.3,
+      "connectors": [
+        { "type": "CCS", "power_kw": 150, "status": "available" }
+      ]
+    }
+  ],
+  "count": 1,
+  "search_area": { "lat": 48.8566, "lng": 2.3522, "radius_km": 10 }
+}
+```
+
+---
+
+## 🧪 Running Tests
+
+```bash
+# Run all tests
+php artisan test
+
+# Run with coverage
+php artisan test --coverage
+
+# Run specific test file
+php artisan test tests/Feature/ReservationTest.php
+```
+
+**Test Coverage:**
+- ✅ `AuthTest` — Register, Login, Logout, Wrong credentials
+- ✅ `ChargingStationTest` — List, Search geo, Create/Delete (admin), Role guard
+- ✅ `ReservationTest` — Create, Conflict detection, Cancel, Update, Isolation
+- ✅ `StatisticsTest` — Admin access, Regular user blocked
+
+---
+
+## 📄 API Documentation (Swagger/OpenAPI)
+
+Install L5-Swagger:
+```bash
+composer require darkaonline/l5-swagger
+php artisan vendor:publish --provider="L5Swagger\L5SwaggerServiceProvider"
+php artisan l5-swagger:generate
+```
+
+Then open: `http://localhost:8000/api/documentation`
+
+---
+
+## 🌱 Default Seeded Credentials
+
+| Role  | Email                | Password   |
+|-------|----------------------|------------|
+| Admin | admin@evcharge.com   | admin1234  |
+| User  | user@evcharge.com    | user1234   |
+
+---
+
+## 📦 Key Dependencies
+
+```json
+{
+  "require": {
+    "laravel/framework": "^11.0",
+    "laravel/sanctum": "^4.0",
+    "darkaonline/l5-swagger": "^8.6"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.0"
+  }
+}
+```

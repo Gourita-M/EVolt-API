@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreStationRequest;
-use App\Http\Requests\UpdateStationRequest;
+
 use App\Models\Station;
+use Symfony\Component\HttpFoundation\Request;
 
 class StationController extends Controller
 {
@@ -19,7 +19,7 @@ class StationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStationRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class StationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateStationRequest $request, Station $station)
+    public function update(Request $request, Station $station)
     {
         //
     }
