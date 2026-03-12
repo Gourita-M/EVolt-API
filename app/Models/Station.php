@@ -16,7 +16,16 @@ class Station extends Model
         'longitude',
         'connector_type',
         'status',
-        'connector_type',
         'power',
     ];
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
+    public function stats()
+    {
+        return $this->hasMany(Stats::class);
+    }
 }
