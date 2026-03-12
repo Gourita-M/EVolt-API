@@ -16,4 +16,9 @@ class Stats extends Model
         'energy_delivered',
         'average_usage',
     ];
+
+    public function station()
+{
+    return $this->belongsTo(Station::class);
+}
 }
