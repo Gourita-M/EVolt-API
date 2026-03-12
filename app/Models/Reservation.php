@@ -18,4 +18,14 @@ class Reservation extends Model
         'status',
         'energy_delivered',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function station()
+    {
+        return $this->belongsTo(Station::class);
+    }
 }
