@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreStatsRequest;
 use App\Http\Requests\UpdateStatsRequest;
 use App\Models\Stats;
+use Symfony\Component\HttpFoundation\Request;
 
 class StatsController extends Controller
 {
@@ -13,13 +14,15 @@ class StatsController extends Controller
      */
     public function index()
     {
-        //
+        $stats = Stats::get();
+
+        return response()->json($stats);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStatsRequest $request)
+    public function store(Request $request)
     {
         //
     }
