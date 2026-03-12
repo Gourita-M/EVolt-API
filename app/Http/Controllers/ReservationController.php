@@ -7,6 +7,26 @@ use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
+
+    public function cancel(Request $request, $id)
+    {
+        
+        $exist = Reservation::where('id',$id)
+        ->where('users_id', $request->user()->id)
+        ->update([
+            'status'=>'cancelled'
+        ]);
+
+        if(!$exist){
+            return response()->json([
+            'message'=>'Reservation Not Found'
+        ]);
+        }
+        return response()->json([
+            'message'=>'Reservation cancelled'
+        ]);
+
+    }
     /**
      * Display a listing of the resource.
      */
@@ -21,7 +41,6 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'users_id' => 'Required|max:255',
             'stations_id' => 'Required|max:255',
             'start_time' => 'Required|max:255',
             'duration' => 'Required|max:255',
@@ -29,7 +48,14 @@ class ReservationController extends Controller
             'energy_delivered' => 'Required|max:255',
         ]);
 
-        $reservations = Reservation::Create($data);
+        $reservations = Reservation::Create([
+            'users_id' => $request->user()->id,
+            'stations_id' => $data['stations_id'],
+            'start_time' => $data['start_time'],
+            'duration' => $data['duration'],
+            'status' => $data['status'],
+            'energy_delivered' => $data['energy_delivered'],
+        ]);
 
         return [ 'reservation' => $reservations ];
     }
@@ -45,9 +71,17 @@ class ReservationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Reservation $reservation)
+    public function update(Request $request, $id)
     {
-        
+        Reservation::Where("id", $id)
+                    ->update([
+                        'start_time'=>$request['start_time'],
+                        'duration'=>$request['duration']
+                    ]);
+
+        return response()->json([
+            'message'=>'Reservation updated'
+        ]);
     }
 
     /**
