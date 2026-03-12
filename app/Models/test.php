@@ -1,12 +1,6 @@
-<?php
+<?php 
 
-namespace App\Models;
+abstract class test {
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class test extends Model
-{
-    /** @use HasFactory<\Database\Factories\TestFactory> */
-    use HasFactory;
+    abstract public function testing();
 }
