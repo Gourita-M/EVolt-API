@@ -41,7 +41,7 @@ class StationController extends Controller
     public function store(Request $request)
     {
         //only admin can add the Station user story o dakeshi
-        if($request->user()->role != 'admin'){
+        if(auth()->user()->role != 'admin'){
             return response()->json(['message'=>'Unauthorized'],403);
         }
 
@@ -68,16 +68,44 @@ class StationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Station $station)
+    public function update(Request $request, $id )
     {
-        //
+        
+        if(auth()->user()->role != 'admin'){
+            return response()->json(['message'=>'Unauthorized'],403);
+        }
+
+        Station::Where('id', $id)
+                    ->update([
+                        'name' => $request->name,
+                        'latitude' => $request->latitude,
+                        'longitude' => $request->longitude,
+                        'connector_type' => $request->connector_type,
+                        'status' => $request->status,
+                        'power' => $request->power,
+                    ]);
+
+        
+        
+        return [ "message" => 'Station Edited Successfuly'];
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Station $station)
+    public function destroy($id)
     {
-        //
+        if(auth()->user()->role != 'admin'){
+            return response()->json(['message'=>'Unauthorized'],403);
+        }
+
+        $delete = Station::Where('id', $id)
+                ->delete();
+
+        if($delete){
+            return ['message' => 'You Have Removed Station'];
+        }else{
+             return ['message' => 'The Station Not Found'];
+        }
     }
 }
