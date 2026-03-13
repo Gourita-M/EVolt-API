@@ -16,6 +16,8 @@ Route::apiResource('reservations', ReservationController::class)->middleware('au
 
 Route::get('/stations', [StationController::class, 'index'])->middleware('auth:sanctum');
 Route::post('/stations', [StationController::class, 'store'])->middleware('auth:sanctum');
+Route::PUT('/stations/{id}', [StationController::class, 'update'])->middleware('auth:sanctum');
+Route::DELETE('/stations/{id}', [StationController::class, 'destroy'])->middleware('auth:sanctum');
 
 
 Route::post('/register',[AuthController::class,'register']);
