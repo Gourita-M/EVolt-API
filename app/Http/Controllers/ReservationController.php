@@ -12,7 +12,7 @@ class ReservationController extends Controller
     {
         
         $exist = Reservation::where('id',$id)
-        ->where('users_id', $request->user()->id)
+        ->where('users_id', auth()->user()->id)
         ->update([
             'status'=>'cancelled'
         ]);
