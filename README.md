@@ -44,12 +44,6 @@ composer install
 cp .env.example .env
 php artisan key:generate
 
-# 3. Configure database in .env
-DB_CONNECTION=mysql
-DB_DATABASE=ev_charging
-DB_USERNAME=root
-DB_PASSWORD=
-
 # 4. Run migrations + seed
 php artisan migrate --seed
 
