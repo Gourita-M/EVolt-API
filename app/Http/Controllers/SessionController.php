@@ -10,7 +10,7 @@ class SessionController extends Controller
     public function history(Request $request)
     {
         
-        $sessions = Reservation::where('users_id',$request->user()->id)
+        $sessions = Reservation::where('users_id',auth()->user()->id)
         ->get();
 
         return response()->json($sessions);
